@@ -148,22 +148,26 @@ func CreateItem(ctx context.Context, description string, optionalStatus string) 
 }
 
 func UpdateDescription(ctx context.Context, index int, description string) error {
+	fmt.Printf("Updating item description:\n")
 	return nil
 }
 
 func UpdateStatus(ctx context.Context, index int, status string) error {
+	fmt.Printf("Updating item status:\n")
 	return nil
 }
 
 func UpdateItem(ctx context.Context, item Item) (Item, error) {
+	fmt.Printf("Updating item:\n")
 	return newItem("test", "test", 0), nil
 }
 
 func DeleteItem(ctx context.Context, index int) error {
+	fmt.Printf("Deleting item:\n")
 	return nil
 }
 func ListItem(index int) {
-	return
+	fmt.Printf("Listing items:\n")
 }
 
 // OpenFileReadWrite opens (or creates) a file for reading and writing.

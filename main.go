@@ -31,8 +31,8 @@ func main() {
 	var flagCreate = flag.String("create", "", "create todo task item (\"description\")")
 	var flagUpdate = flag.Int("update", 0, "update todo task item description (id -description \"new description\")")
 	var flagNotStarted = flag.Int("not_started", 0, "set todo task item status to not started ( id )")
-	var flagStarted = flag.Int("start", 0, "set todo task item status to started ( id )")
-	var flagCompleted = flag.Int("complete", 0, "set todo task item status to completed ( id )")
+	var flagStarted = flag.Int("started", 0, "set todo task item status to started ( id )")
+	var flagCompleted = flag.Int("completed", 0, "set todo task item status to completed ( id )")
 	var flagDelete = flag.Int("delete", 0, "delete a todo task item ( id )")
 	var flagList = flag.Bool("list", false, "list items in the todo list ( optionally use -itemid num to show one item)")
 
