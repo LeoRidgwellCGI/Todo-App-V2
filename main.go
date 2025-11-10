@@ -120,6 +120,8 @@ func main() {
 
 	// process the flags
 	switch {
+	case *flagList:
+		storage.ListItem(*flagItemID)
 	case *flagCreate != "":
 		if nextItem, ok := storage.CreateItem(ctx, *flagCreate, descVal); ok == nil {
 			storage.ListItem(nextItem)
@@ -143,8 +145,6 @@ func main() {
 	case *flagDelete > 0:
 		storage.DeleteItem(ctx, *flagDelete)
 		storage.ListItem(-1)
-	case *flagList:
-		storage.ListItem(*flagItemID)
 	default:
 		fmt.Fprintf(os.Stderr, `Todo-App
 Manage to-do items: list, add, update descriptions, or delete by ID.
@@ -153,6 +153,9 @@ Usage:
   go run . -list [-itemid <id>]
   go run . -create "<description>"
   go run . -update <id> "<new description>"
+  go run . -not_started <id>
+  go run . -started <id>
+  go run . -completed <id>
   go run . -delete <id>
 `)
 	}
