@@ -11,8 +11,6 @@ import (
 	"slices"
 	"strings"
 	"time"
-
-	"todo-app/logging"
 )
 
 const (
@@ -27,23 +25,20 @@ var (
 )
 
 type Item struct {
-	ID          string    `json:"id"`
+	ID          int       `json:"id"`
 	Description string    `json:"description"`
 	Status      string    `json:"status"`
 	Created     time.Time `json:"created"`
-	Line        int       `json:"line"`
 }
 
 type Items map[int]Item
 
-func newItem(description string, status string, line int) Item {
-	id := logging.GenerateID()
+func newItem(id int, description string, status string) Item {
 	item := Item{
 		ID:          id,
 		Description: description,
 		Status:      status,
 		Created:     time.Now().UTC(),
-		Line:        line,
 	}
 	return item
 }
@@ -52,24 +47,24 @@ func newItem(description string, status string, line int) Item {
 func Save(ctx context.Context, datafile string) error {
 	if data, err := json.Marshal(itemsList); err != nil {
 		fmt.Printf("Save failed converting todo list to json, error: %s \n", err)
-		logging.Log().ErrorContext(ctx, "Save failed converting todo list to json", "error", err)
+		slog.ErrorContext(ctx, "Save failed converting todo list to json", "error", err)
 		return err
 	} else {
 		if destination, err := OpenFileWriteTruncate(datafile); err != nil {
 			fmt.Printf("Save failed getting file, error: %s, datafile: %s \n", err, datafile)
-			logging.Log().ErrorContext(ctx, "Save failed getting file", "error", err, "datafile", datafile)
+			slog.ErrorContext(ctx, "Save failed getting file", "error", err, "datafile", datafile)
 			return err
 		} else {
 			defer destination.Close()
 			if _, err := destination.Write(data); err != nil {
 				fmt.Printf("Save to file failed, error: %s, datafile: %s \n", err, datafile)
-				logging.Log().ErrorContext(ctx, "Save to file failed", "error", err, "datafile", datafile)
+				slog.ErrorContext(ctx, "Save to file failed", "error", err, "datafile", datafile)
 				return err
 			}
 		}
 	}
 	fmt.Printf("Saved data to file, datafile: %s \n", datafile)
-	logging.Log().InfoContext(ctx, "Saved data to file", "datafile", datafile)
+	slog.InfoContext(ctx, "Saved data to file", "datafile", datafile)
 	return nil
 }
 
@@ -78,7 +73,7 @@ func Load(ctx context.Context, datafile string) (Items, error) {
 	destination, err := OpenFileReadWrite(datafile)
 	if err != nil {
 		fmt.Printf("Load failed listing file, error: %s, datafile: %s\n", err, datafile)
-		logging.Log().ErrorContext(ctx, "Load failed listing file", "error", err, "datafile", datafile)
+		slog.ErrorContext(ctx, "Load failed listing file", "error", err, "datafile", datafile)
 		return Items{}, err
 	}
 	if destination != nil {
@@ -91,7 +86,7 @@ func loadItem(ctx context.Context, destination io.Reader) (Items, error) {
 	if item, err := io.ReadAll(destination); err != nil {
 		fmt.Println(err)
 		fmt.Printf("Load item failed, error: %s \n", err)
-		logging.Log().ErrorContext(ctx, "Load item failed", "error", err)
+		slog.ErrorContext(ctx, "Load item failed", "error", err)
 		return Items{}, err
 	} else if len(item) == 0 {
 		// not neccessarily an error
@@ -103,7 +98,7 @@ func loadItem(ctx context.Context, destination io.Reader) (Items, error) {
 		err := json.Unmarshal(data, &itemsList)
 		if err != nil {
 			fmt.Println(err)
-			logging.Log().ErrorContext(ctx, "Load item from json failed", "error", err)
+			slog.ErrorContext(ctx, "Load item from json failed", "error", err)
 			return Items{}, err
 		}
 		return itemsList, nil
@@ -114,13 +109,13 @@ func Open(ctx context.Context, datafile string) error {
 	items, err := Load(ctx, datafile)
 	if err != nil {
 		fmt.Printf("Open file failed, error: %s, datafile: %s\n", err, datafile)
-		logging.Log().ErrorContext(ctx, "Open file failed", "error", err, "datafile", datafile)
+		slog.ErrorContext(ctx, "Open file failed", "error", err, "datafile", datafile)
 		return err
 	}
 	itemsList = items
 	itemsDatafile = datafile
 	fmt.Printf("Opened file and loaded items, count: %d, datafile: %s \n", len(itemsList), datafile)
-	logging.Log().InfoContext(ctx, "Opened file and loaded items", "count", len(itemsList), "datafile", datafile)
+	slog.InfoContext(ctx, "Opened file and loaded items", "count", len(itemsList), "datafile", datafile)
 	return nil
 }
 
@@ -139,11 +134,11 @@ func CreateItem(ctx context.Context, description string, optionalStatus string) 
 	// Determine next key
 	itemKeys := collectKeys(itemsList)
 	nextKey := highestKey(itemKeys) + 1
-	item := newItem(description, status, nextKey)
+	item := newItem(nextKey, description, status)
 	itemsList[nextKey] = item
 
 	// Log creation
-	logging.Log().InfoContext(ctx, "Added new item", "ID", item.ID, "Description", item.Description, "Status:", item.Status)
+	slog.InfoContext(ctx, "Added new item", "ID", item.ID, "Description", item.Description, "Status:", item.Status)
 	return nextKey, nil
 }
 
@@ -159,7 +154,7 @@ func UpdateStatus(ctx context.Context, index int, status string) error {
 
 func UpdateItem(ctx context.Context, item Item) (Item, error) {
 	fmt.Printf("Updating item:\n")
-	return newItem("test", "test", 0), nil
+	return newItem(1, "test", "test"), nil
 }
 
 func DeleteItem(ctx context.Context, index int) error {
