@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"todo-app/actor"
 )
 
 func addRoutes(mux *http.ServeMux) {
@@ -16,24 +18,36 @@ func addRoutes(mux *http.ServeMux) {
 }
 
 func getListHandler(w http.ResponseWriter, r *http.Request) {
-
+	items := actor.ListAll()
+	fmt.Println(items)
 }
 
 func getByIDHandler(w http.ResponseWriter, r *http.Request) {
-
+	id := 1
+	item := actor.List(id)
+	fmt.Println(item)
 }
 
 func createItemHandler(w http.ResponseWriter, r *http.Request) {
+	description := "Sample Task"
+	status := "not_started"
+	actor.Create(description, status)
 }
 
 func updateItemHandler(w http.ResponseWriter, r *http.Request) {
-
+	id := 1
+	description := "Updated Task"
+	status := "started"
+	actor.Update(id, description, status)
 }
 
 func deleteItemHandler(w http.ResponseWriter, r *http.Request) {
+	id := 1
+	actor.Delete(id)
 }
 
 func aboutPageHandler(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func dynamicListHandler(w http.ResponseWriter, r *http.Request) {
