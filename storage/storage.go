@@ -38,6 +38,11 @@ func newItem(id int, description string, status string) Item {
 	return item
 }
 
+// GetDataFile returns the current datafile path used by storage
+func GetDataFile() string {
+	return itemsDatafile
+}
+
 // Save writes the current items list to the specified json file.
 func Save(ctx context.Context, datafile string) error {
 	if data, err := json.Marshal(itemsList); err != nil {
@@ -235,6 +240,13 @@ func GetItemByID(id int) (Item, error) {
 	} else {
 		return Item{}, errors.New("no items available")
 	}
+}
+
+func GetAllItems() (Items, error) {
+	if len(itemsList) > 0 {
+		return itemsList, nil
+	}
+	return Items{}, errors.New("no items available")
 }
 
 // commitFile saves the current items list to the data file if it is open.

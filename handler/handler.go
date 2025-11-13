@@ -3,10 +3,10 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+	"text/template"
 	"todo-app/actor"
 	"todo-app/storage"
 )
@@ -23,8 +23,12 @@ func AddRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/delete", deleteItemHandler)
 	mux.HandleFunc("/get/{itemid}", getByIDHandler)
 	mux.HandleFunc("/get", getListHandler)
-	mux.HandleFunc("/about", aboutPageHandler)
 	mux.HandleFunc("/list", dynamicListHandler)
+
+	mux.Handle("/about/", http.StripPrefix("/about/", http.FileServer(http.Dir("static/about"))))
+	mux.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/about/", http.StatusMovedPermanently)
+	})
 }
 
 func getListHandler(w http.ResponseWriter, r *http.Request) {
@@ -153,10 +157,14 @@ func deleteItemHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{"deleted": id})
 }
 
-func aboutPageHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "About Todo App")
-}
-
 func dynamicListHandler(w http.ResponseWriter, r *http.Request) {
-	getListHandler(w, r)
+	const listTemplate = "<!doctype html><html><head><meta charset=\"utf-8\"><title>Todos</title><style>body{font-family:Arial,sans-serif;margin:2em;background:#f9f9f9;}h1{color: #007acc;}p{max-width:600px;}ul{display:table;border-collapse:collapse;width:100%;padding:0;margin:0;}ul li{display:table-row;}ul li span{display:table-cell;border:1px solid #007acc;padding:8px;text-align:left;}ul li.header span{font-weight:bold;background-color: #007acc;color: #ffffff;}</style></head><body><h1>Todos</h1><ul><li class='header'><span>ID</span><span>Description</span><span>Status</span></li>{{range .Items}}<li><span>{{.ID}}</span><span>{{.Description}}</span><span>{{.Status}}</span></li>{{else}}<li><span colspan=\"3\">none</span></li>{{end}}</ul></body></html>"
+	list, err := actorInstance.ListAll(context.Background())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	tpl := template.Must(template.New("list").Parse(listTemplate))
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	_ = tpl.Execute(w, struct{ Items storage.Items }{Items: list})
 }

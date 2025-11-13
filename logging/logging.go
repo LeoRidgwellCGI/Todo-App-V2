@@ -50,7 +50,6 @@ func OpenLogFile(fileName string) (*os.File, error) {
 
 func LoggerOptions() slog.HandlerOptions {
 	// TODO: adjust options based on environment
-	var options slog.HandlerOptions
-	options = slog.HandlerOptions{AddSource: false}
+	options := slog.HandlerOptions{AddSource: false}
 	return options
 }
