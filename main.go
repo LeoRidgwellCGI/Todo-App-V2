@@ -5,7 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
+	"todo-app/handler"
 	"todo-app/logging"
 	"todo-app/storage"
 )
@@ -55,6 +57,7 @@ func main() {
 	var flagStatus = flag.String("status", "", "use this with -create or -update to set the status (\"not_started|has_started|completed\")")
 	var flagDescription = flag.String("description", "", "use this with -update for the update description text -description \"new text\"")
 	var flagItemID = flag.Int("itemid", 0, "optional, use this -itemid with -list for one item")
+	var flagServer = flag.Bool("server", false, "run in server mode (starts HTTP API server)")
 	flag.Parse()
 
 	// setup application context with trace id
@@ -147,6 +150,8 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Item ID %d not found for delete.\n", *flagDelete)
 			slog.ErrorContext(ctx, "Item ID not found for delete", "ItemID", *flagDelete)
 		}
+	case *flagServer:
+		runMode = RunModeServer
 	default:
 		fmt.Fprintf(os.Stderr, `Todo-App
 Manage to-do items: list, add, update descriptions, or delete by ID.
@@ -162,5 +167,27 @@ Usage:
 	if runMode == RunModeCLI {
 		// write back to the file
 		storage.Save(ctx, storagefile)
+	} else {
+		// start server mode
+		slog.InfoContext(ctx, "Starting server mode")
+		fmt.Println("Starting server mode on http://localhost:8080")
+		startServer(ctx)
+	}
+}
+
+// startServer initializes the actor, sets up routes, and starts the HTTP server
+func startServer(ctx context.Context) {
+	// Import handler here to avoid import cycle issues
+	// If handler is not imported, add: "todo-app/handler" to imports
+	// Initialize actor
+	handler.InitActor(ctx)
+
+	mux := http.NewServeMux()
+	handler.AddRoutes(mux)
+
+	err := http.ListenAndServe(":8080", mux)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Server failed: %v\n", err)
+		slog.ErrorContext(ctx, "Server failed", "error", err)
 	}
 }
