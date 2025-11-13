@@ -13,10 +13,12 @@ import (
 
 var actorInstance *actor.Actor
 
+// InitActor initializes the actor instance.
 func InitActor(ctx context.Context) {
 	actorInstance = actor.NewActor(ctx)
 }
 
+// AddRoutes adds HTTP routes to the provided ServeMux.
 func AddRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/create", createItemHandler)
 	mux.HandleFunc("/update", updateItemHandler)
@@ -31,6 +33,7 @@ func AddRoutes(mux *http.ServeMux) {
 	})
 }
 
+// getListHandler handles requests to retrieve all todo items.
 func getListHandler(w http.ResponseWriter, r *http.Request) {
 	if actorInstance == nil {
 		http.Error(w, "Actor not initialized", http.StatusInternalServerError)
@@ -54,6 +57,7 @@ func getListHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(todos)
 }
 
+// getByIDHandler handles requests to retrieve a todo item by ID.
 func getByIDHandler(w http.ResponseWriter, r *http.Request) {
 	if actorInstance == nil {
 		http.Error(w, "Actor not initialized", http.StatusInternalServerError)
@@ -83,6 +87,7 @@ func getByIDHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// createItemHandler handles requests to create a new todo item.
 func createItemHandler(w http.ResponseWriter, r *http.Request) {
 	if actorInstance == nil {
 		http.Error(w, "Actor not initialized", http.StatusInternalServerError)
@@ -108,6 +113,7 @@ func createItemHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// updateItemHandler handles requests to update an existing todo item.
 func updateItemHandler(w http.ResponseWriter, r *http.Request) {
 	if actorInstance == nil {
 		http.Error(w, "Actor not initialized", http.StatusInternalServerError)
@@ -133,6 +139,7 @@ func updateItemHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// deleteItemHandler handles requests to delete a todo item by ID.
 func deleteItemHandler(w http.ResponseWriter, r *http.Request) {
 	if actorInstance == nil {
 		http.Error(w, "Actor not initialized", http.StatusInternalServerError)
@@ -157,6 +164,7 @@ func deleteItemHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{"deleted": id})
 }
 
+// dynamicListHandler handles requests to retrieve all todo items.
 func dynamicListHandler(w http.ResponseWriter, r *http.Request) {
 	const listTemplate = "<!doctype html><html><head><meta charset=\"utf-8\"><title>Todos</title><style>body{font-family:Arial,sans-serif;margin:2em;background:#f9f9f9;}h1{color: #007acc;}p{max-width:600px;}ul{display:table;border-collapse:collapse;width:100%;padding:0;margin:0;}ul li{display:table-row;}ul li span{display:table-cell;border:1px solid #007acc;padding:8px;text-align:left;}ul li.header span{font-weight:bold;background-color: #007acc;color: #ffffff;}</style></head><body><h1>Todos</h1><ul><li class='header'><span>ID</span><span>Description</span><span>Status</span></li>{{range .Items}}<li><span>{{.ID}}</span><span>{{.Description}}</span><span>{{.Status}}</span></li>{{else}}<li><span colspan=\"3\">none</span></li>{{end}}</ul></body></html>"
 	list, err := actorInstance.ListAll(context.Background())

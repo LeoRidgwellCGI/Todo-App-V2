@@ -133,6 +133,7 @@ func CreateItem(ctx context.Context, description string, status string) (Item, e
 	return item, nil
 }
 
+// UpdateItem updates an existing item in the items list.
 func UpdateItem(ctx context.Context, item Item) (Item, error) {
 	// Validate inputs
 	if item.ID <= 0 {
@@ -168,6 +169,7 @@ func UpdateItem(ctx context.Context, item Item) (Item, error) {
 	return item, nil
 }
 
+// DeleteItem deletes an item from the items list by its ID.
 func DeleteItem(ctx context.Context, index int) error {
 	// validate inputs
 	if index <= 0 {
@@ -197,6 +199,7 @@ func DeleteItem(ctx context.Context, index int) error {
 	return nil
 }
 
+// ListItem lists items; if index is 0, lists all items, otherwise lists the item with the given ID.
 func ListItem(index int) error {
 	// List items
 	fmt.Printf("Listing items:\n")
@@ -242,6 +245,7 @@ func GetItemByID(id int) (Item, error) {
 	}
 }
 
+// GetAllItems returns all items in the items list.
 func GetAllItems() (Items, error) {
 	if len(itemsList) > 0 {
 		return itemsList, nil

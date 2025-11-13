@@ -27,6 +27,7 @@ type Actor struct {
 	cmdChan chan Command
 }
 
+// NewActor creates and starts a new Actor instance.
 func NewActor(ctx context.Context) *Actor {
 	actor := &Actor{
 		cmdChan: make(chan Command),
@@ -35,6 +36,7 @@ func NewActor(ctx context.Context) *Actor {
 	return actor
 }
 
+// run processes incoming commands sequentially.
 func (a *Actor) run(ctx context.Context) {
 	for cmd := range a.cmdChan {
 		switch cmd.Type {
