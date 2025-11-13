@@ -178,14 +178,14 @@ Usage:
 
 // startServer initializes the actor, sets up routes, and starts the HTTP server
 func startServer(ctx context.Context) {
-	// Import handler here to avoid import cycle issues
-	// If handler is not imported, add: "todo-app/handler" to imports
 	// Initialize actor
 	handler.InitActor(ctx)
 
+	// Setup HTTP routes
 	mux := http.NewServeMux()
 	handler.AddRoutes(mux)
 
+	// Start HTTP server
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Server failed: %v\n", err)
