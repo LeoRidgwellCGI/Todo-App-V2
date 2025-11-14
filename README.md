@@ -215,25 +215,25 @@ Static about page
 ```
 Todo-App-V2/
 ├── main.go                 # Application entry point and CLI handling
-├── main_test.go           # Main package tests
-├── go.mod                 # Go module definition
-├── README.md             # This file
+├── main_test.go            # Main package tests
+├── go.mod                  # Go module definition
+├── README.md               # This file
 │
-├── actor/                # Actor pattern implementation
-│   ├── actor.go         # Channel-based concurrency handling
-│   └── actor_test.go    # Actor tests with concurrency tests
+├── actor/                  # Actor pattern implementation
+│   ├── actor.go            # Channel-based concurrency handling
+│   └── actor_test.go       # Actor tests with concurrency tests
 │
-├── handler/             # HTTP handlers
-│   ├── handler.go      # API endpoints and routing
-│   └── handler_test.go # Handler tests with concurrency tests
+├── handler/                # HTTP handlers
+│   ├── handler.go          # API endpoints and routing
+│   └── handler_test.go     # Handler tests with concurrency tests
 │
-├── storage/            # Data persistence layer
-│   ├── storage.go     # JSON file storage operations
-│   └── storage_test.go # Storage tests (if exists)
+├── storage/                # Data persistence layer
+│   ├── storage.go          # JSON file storage operations
+│   └── storage_test.go     # Storage tests
 │
-└── logging/           # Logging utilities
-    ├── logging.go    # Logger setup and utilities
-    └── logging_test.go # Logging tests
+└── logging/                # Logging utilities
+    ├── logging.go          # Logger setup and utilities
+    └── logging_test.go     # Logging tests
 ```
 
 ## 🧪 Testing
@@ -250,6 +250,8 @@ go test ./... -v
 go test ./actor -v
 go test ./handler -v
 go test ./logging -v
+go test ./storage -v
+go test ./main -v
 ```
 
 ### Run with coverage:
@@ -257,10 +259,15 @@ go test ./logging -v
 go test ./... -cover
 ```
 
+### Run with check for deadlocks:
+```bash
+go test ./... -race
+```
+
 ### Run only concurrency tests:
 ```bash
-go test ./handler -v -run TestConcurrency
-go test ./actor -v -run TestActor_Concurrent
+go test ./handler -v -run TestHandler_Concurrency
+go test ./actor -v -run TestActor_Concurrency
 ```
 
 ### Test Categories
