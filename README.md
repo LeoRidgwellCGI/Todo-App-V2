@@ -30,7 +30,7 @@ Built with an actor pattern for safe concurrent operations and comprehensive tes
 - **Comprehensive Logging**: Structured logging with trace IDs
 - **Thread-Safe**: Built-in concurrency support for multiple operations
 - **Full CRUD Operations**: Create, Read, Update, Delete todo items
-- **Status Management**: Track items as not_started, in_progress, or completed
+- **Status Management**: Track items as not_started, in_progress, or is_finished
 - **High Test Coverage**: Extensive unit tests including concurrency tests
 
 ## 🏗️ Architecture
@@ -108,7 +108,7 @@ go run . -delete 1
 #### Valid status values:
 - `not_started` - Task hasn't been started
 - `in_progress` - Task is in progress
-- `completed` - Task has been completed
+- `is_finished` - Task has been finished
 
 ### Server Mode
 

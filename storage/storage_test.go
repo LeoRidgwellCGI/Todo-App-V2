@@ -71,12 +71,12 @@ func TestStorage_UpdateItem(t *testing.T) {
 
 	item, _ := CreateItem(ctx, "desc", "not_started")
 	item.Description = "updated"
-	item.Status = "completed"
+	item.Status = "is_finished"
 	updated, err := UpdateItem(ctx, item)
 	if err != nil {
 		t.Fatalf("UpdateItem failed: %v", err)
 	}
-	if updated.Description != "updated" || updated.Status != "completed" {
+	if updated.Description != "updated" || updated.Status != "is_finished" {
 		t.Errorf("UpdateItem did not update fields")
 	}
 }
@@ -159,7 +159,7 @@ func TestStorage_GetAllItems(t *testing.T) {
 	defer os.Remove(itemsDatafile)
 
 	_, _ = CreateItem(ctx, "desc1", "not_started")
-	_, _ = CreateItem(ctx, "desc2", "completed")
+	_, _ = CreateItem(ctx, "desc2", "is_finished")
 	all, err := GetAllItems()
 	if err != nil {
 		t.Fatalf("GetAllItems failed: %v", err)

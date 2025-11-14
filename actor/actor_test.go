@@ -81,7 +81,7 @@ func TestActor_CreateMultiple(t *testing.T) {
 	}{
 		{"Item 1", "not_started"},
 		{"Item 2", "in_progress"},
-		{"Item 3", "completed"},
+		{"Item 3", "is_finished"},
 	}
 
 	for _, item := range items {
